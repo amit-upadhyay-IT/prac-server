@@ -1,0 +1,12 @@
+server.java output
+
+Started
+Binded Successfully
+
+client.java output
+
+Enter string 1
+Hello
+Enter string 2
+World
+HelloWorld

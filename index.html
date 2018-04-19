@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Codes</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+		$(function() {
+			$('#filez').change(function() {
+				$('.gen-preview').html('Generating preview...');
+				var file = $('#filez')[0].files[0];
+				var reader = new FileReader();
+				reader.onload = function(event) {
+					var data = reader.result;
+					$('.gen-preview').html('<p><b>Preview</b></p>');
+					$('.thumb').attr('src', data);
+				}
+				reader.readAsDataURL(file);
+			});
+			
+			var socket = io('http://localhost:3000');
+			socket.on('connect', function() {
+				socket.on('uploadProgress', function(data) {
+					console.log('inside eventtt');
+					console.log(data);
+					$('.progress-bar').css('width', data.percent + '%');
+					$('.progress-bar').html(data.percent + '%');
+					if(data.percent == 100) {
+						$('.progress-bar').removeClass('active');
+					}
+				})	
+			})
+			
+
+			$('#form').submit(function(e) {
+				e.preventDefault();
+				var testz = new FormData();
+				testz.append('filez', $('#filez')[0].files[0]);
+				console.log(testz);
+				$.ajax({
+					url: '/',
+					data: testz,
+					processData: false,
+					contentType: false,
+					beforeSend: function() {
+						console.log('sending now...');
+					},
+					method: 'POST',
+					success: function(res) {
+						console.log(res);
+					}
+				})
+			});
+		})
+	</script>
+</head>
+<body>
+	<div class="container">
+		<h1 class="text-center">Codes download and upload</h1><hr>
+		<div>
+			<p class="text-muted">
+				<b>Note: </b>The uploaded files will get saved at `./uploads` dir.
+			</p>
+		</div>
+		<form role="form" class="form-inline" method="post" enctype="multipart/form-data" id="form">
+			<div class="form-group">
+				<input type="file" name="filez" id="filez" class="form-control" />
+			</div>
+			<input type="submit" value="Upload" class="btn btn-success btn-sm" />
+		</form>
+		<br>
+		<div class="row">
+			<div class="col-lg-6">
+				<div class="progress">
+					<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-6">
+				<p class="text-muted gen-preview"></p>
+				<img src="" class="thumb img-responsive" />
+			</div>
+		</div>
+		<hr>
+		
+		<a href="/downloadall" class="btn btn-info" role="button">Download All</a>
+		<br><br>
+	</div>
+	
+	
+</body>
+</html>
