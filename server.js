@@ -8,14 +8,36 @@ var server = http.createServer(app);
 
 var io = require('socket.io')(server);
 
-server.listen(process.env.PORT || 3000, function() {
-	console.log('listening on port 3000');	
+server.listen(process.env.PORT || 8000, function() {
+	console.log('listening on port 8000');
 });
 
 app.get('/downloadall', function(req, res){
   var file = __dirname + '/files/all.zip';
   res.download(file);
 });
+
+app.get('/ds', function(req, res){
+  var file = __dirname + '/files/all.zip';
+  res.download(file);
+});
+
+app.get('/amit', function(req, res){
+  var file = __dirname + '/files/amit.zip';
+  res.download(file);
+});
+
+app.get('/q1', function(req, res){
+  var file = __dirname + '/files/q1.zip';
+  res.download(file);
+});
+
+app.get('/q3', function(req, res){
+  var file = __dirname + '/files/q3.zip';
+  res.download(file);
+});
+
+
 
 app.get('/', function(req, res) {
 	res.sendFile(__dirname + '/index.html');

@@ -1,0 +1,24 @@
+mpicc server.c -o server.o
+mpicc client.c -o client.o
+
+
+server side-
+mpirun -np 1  ./server.o
+Server available at port: 208207872.0;tcp://192.168.55.98:46070+208207873.0;tcp://192.168.55.98::300
+Received character: A
+Received character: I
+Received character: T
+
+Received String: AIT
+
+Reversed string is : TIA
+
+
+client side-
+mpirun -np 1 ./client.o '208207872.0;tcp://192.168.55.98:46070+208207873.0;tcp://192.168.55.98::300'
+
+Enter the string :
+AIT
+
+Reversed string is : TIA
+
