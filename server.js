@@ -8,8 +8,8 @@ var server = http.createServer(app);
 
 var io = require('socket.io')(server);
 
-server.listen(process.env.PORT || 8000, function() {
-	console.log('listening on port 8000');
+server.listen(process.env.PORT || 9000, function() {
+	console.log('listening on port 9000');
 });
 
 app.get('/downloadall', function(req, res){
@@ -17,13 +17,8 @@ app.get('/downloadall', function(req, res){
   res.download(file);
 });
 
-app.get('/ds', function(req, res){
+app.get('/ad', function(req, res){
   var file = __dirname + '/files/all.zip';
-  res.download(file);
-});
-
-app.get('/amit', function(req, res){
-  var file = __dirname + '/files/amit.zip';
   res.download(file);
 });
 
@@ -31,6 +26,37 @@ app.get('/q1', function(req, res){
   var file = __dirname + '/files/q1.zip';
   res.download(file);
 });
+
+app.get('/q2', function(req, res){
+  var file = __dirname + '/files/q2.zip';
+  res.download(file);
+});
+
+app.get('/q4', function(req, res){
+  var file = __dirname + '/files/q4.zip';
+  res.download(file);
+});
+
+app.get('/q5', function(req, res){
+  var file = __dirname + '/files/q5.zip';
+  res.download(file);
+});
+
+app.get('/q6', function(req, res){
+  var file = __dirname + '/files/q6.zip';
+  res.download(file);
+});
+
+app.get('/q7', function(req, res){
+  var file = __dirname + '/files/q7.zip';
+  res.download(file);
+});
+
+app.get('/q8', function(req, res){
+  var file = __dirname + '/files/q8.zip';
+  res.download(file);
+});
+
 
 app.get('/q3', function(req, res){
   var file = __dirname + '/files/q3.zip';

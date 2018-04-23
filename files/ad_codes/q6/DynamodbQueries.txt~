@@ -1,0 +1,230 @@
+
+1. Create Table
+
+var params = {
+    TableName : "emp",
+    KeySchema : [
+	{AttributeName: "empid", KeyType: "HASH" },
+    	{AttributeName: "ename", KeyType: "RANGE" }
+	],
+    AttributeDefinitions: [
+	{AttributeName: "empid", AttributeType: "S" },
+    	{AttributeName: "ename", AttributeType:"S" }
+	],
+	
+    ProvisionedThroughput: {
+	ReadCapacityUnits: 1, 
+	WriteCapacityUnits: 1
+	}
+};
+
+dynamodb.createTable(params, function(err, data)
+{
+    if(err)
+    console.log(JSON.stringify(err, null, 2));
+    else
+    console.log(JSON.stringify(data, null, 2));  
+});
+
+
+
+
+2. DescribeTable
+
+var params = {
+    TableName : "emp",
+   
+};
+
+dynamodb.describeTable(params, function(err, data)
+{
+    if(err)
+    console.log(JSON.stringify(err, null, 2));
+    else
+    console.log(JSON.stringify(data, null, 2));  
+});
+
+3. Sacn table
+
+var params = {
+    TableName: "emp",
+    
+};
+
+
+
+dynamodb.scan(params, function(err, data) {
+    if (err)
+        console.log(JSON.stringify(err, null, 2));
+    else
+        console.log(JSON.stringify(data, null, 2));
+});
+
+4. Put Item
+
+var params = {
+    TableName: "emp",
+    Item : {
+        "empid":"s1002",
+        "ename":"Gagandeep"
+    }
+    
+};
+
+
+
+dynamodb.putItem(params, function(err, data) {
+    if (err)
+        console.log(JSON.stringify(err, null, 2));
+    else
+        console.log(JSON.stringify(data, null, 2));
+});
+
+5 Get Item
+
+var params = {
+    TableName : "emp",
+ Key:{
+     "empid":"s1003",
+     "ename":"ask",
+    
+ }  
+};
+
+dynamodb.getItem(params, function(err, data)
+{
+    if(err)
+    console.log(JSON.stringify(err, null, 2));
+    else
+    console.log(JSON.stringify(data, null, 2));  
+});
+
+
+
+6 Projection Expression
+
+var params = {
+    TableName : "emp",
+ Key:{
+     "empid":"s1003",
+     "ename":"ask",
+  },
+  ProjectionExpression: "salary"
+};
+
+dynamodb.getItem(params, function(err, data)
+{
+    if(err)
+    console.log(JSON.stringify(err, null, 2));
+    else
+    console.log(JSON.stringify(data, null, 2));  
+});
+
+
+7 Delete Item
+
+var params = {
+    TableName : "emp",
+ Key:{
+     "empid":"s1003",
+     "ename":"ask",
+  }
+};
+
+dynamodb.deleteItem(params, function(err, data)
+{
+    if(err)
+    console.log(JSON.stringify(err, null, 2));
+    else
+    console.log(JSON.stringify(data, null, 2));  
+});
+
+
+8 Conditional Delete
+
+ar params = {
+    TableName : "emp",
+ Key:{
+     "empid":"s1004",
+     "ename":"pvg",
+       },
+       ConditionExpression:"salary = :esal",
+       ExpressionAttributeValues:{":esal":20000}
+};
+
+dynamodb.deleteItem(params, function(err, data)
+{
+    if(err)
+    console.log(JSON.stringify(err, null, 2));
+    else
+    console.log(JSON.stringify(data, null, 2));  
+});
+
+
+9 Delete Table
+
+var params = {
+    TableName : "emp",
+ };
+
+dynamodb.deleteTable(params, function(err, data)
+{
+    if(err)
+    console.log(JSON.stringify(err, null, 2));
+    else
+    console.log(JSON.stringify(data, null, 2));  
+});
+
+
+10 Update Item
+
+var params = {
+    TableName : "emp",
+    Key:{
+        "empid":"s1003",
+        "ename":"ask"
+    },
+    UpdateExpression:"SET salary = :esal",
+    ExpressionAttributeValues:{
+        ":esal":40000
+    },
+    ReturnValues:"ALL_NEW"
+ };
+
+dynamodb.updateItem(params, function(err, data)
+{
+    if(err)
+    console.log(JSON.stringify(err, null, 2));
+    else
+    console.log(JSON.stringify(data, null, 2));  
+});
+
+
+
+11 BatchGetItem
+
+
+var params = {
+    RequestItems: {
+        "emp": {
+            Keys: [
+                {
+                    "empid": "1001",
+                    "ename": "YNG"
+                },
+                {
+                    "empid": "1002",
+                    "ename": "GMW"
+                }
+            ],
+            ProjectionExpression:"empid, salary"
+        }
+    }
+};
+
+dynamodb.batchGetItem(params, function (err, data) {
+    if (err)
+        console.log(JSON.stringify(err, null, 2));
+    else
+        console.log(JSON.stringify(data, null, 2));
+});

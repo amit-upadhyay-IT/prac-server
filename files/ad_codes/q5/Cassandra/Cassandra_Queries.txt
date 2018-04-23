@@ -1,0 +1,156 @@
+
+1.Create KeySpace
+
+CREATE KEYSPACE demo
+WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 3};
+
+2.use demo;
+
+
+3.Create Table
+   cqlsh:tp1> create table Employee 
+   (emp_id int, emp_name text, emp_address text, emp_desg text, emp_dept text, emp_salary int,
+   primary key(emp_id, emp_dept));
+
+
+4.Describe Table
+
+  cqlsh:tp1> describe table Employee;
+
+5.CREATE TABLE tp1.employee (
+    emp_id int PRIMARY KEY,
+    emp_address text,
+    emp_dept text,
+    emp_desg text,
+    emp_name text,
+    emp_salary int
+) WITH bloom_filter_fp_chance = 0.01
+    AND caching = '{"keys":"ALL", "rows_per_partition":"NONE"}'
+    AND comment = ''
+    AND compaction = {'class': 'org.apache.cassandra.db.compaction.SizeTieredCom
+pactionStrategy'}
+    AND compression = {'sstable_compression': 'org.apache.cassandra.io.compress.
+LZ4Compressor'}
+    AND dclocal_read_repair_chance = 0.1
+    AND default_time_to_live = 0
+    AND gc_grace_seconds = 864000
+    AND max_index_interval = 2048
+    AND memtable_flush_period_in_ms = 0
+    AND min_index_interval = 128
+    AND read_repair_chance = 0.0
+    AND speculative_retry = '99.0PERCENTILE';
+
+
+6.Insert Data
+  cqlsh:tp1> insert into Employee1(emp_id, emp_name, emp_address, emp_desg, emp_dept, emp_salary,eqcol) 
+           values(1003, 'DEF', 'PUNE', 'JD', 'ADMIN', 200000,1);
+
+7.Find all Employees
+
+
+cqlsh:tp1> select * from Employee;
+
+ emp_id | emp_address | emp_dept  | emp_desg | emp_name | emp_salary | eqcol
+--------+-------------+-----------+----------+----------+------------+-------
+   1001 |        PUNE |     ADMIN |      DIR |      XYZ |     100000 |     1
+   1003 |        PUNE | PRINCIPAL |     PRIN |      DEF |     125000 |     1
+   1002 |        PUNE |     ADMIN |       JD |      PQR |      50000 |     1
+
+
+
+It is necessary to always have at least one EQ comparison on secondary indices
+
+Inequalities on secondary indices are always done in memory, so without at least one EQ on 
+another secondary index you will be loading every row in the database, which with a massive database 
+isn't a good idea. So by requiring at least one EQ on an index, you hopefully limit the set of rows 
+that need to be read into memory to a manageable size. (Although obviously you can still get into
+ trouble with that as well).
+
+
+Find all employees whose salary is greater than 10000
+A WHERE clause can be used only on the columns that are a part of primary key or have a secondary index on them.
+
+create index emp_sal_indx on Employee(emp_salary);
+create index dummy_idx on Employee(eqcol);
+
+select * from Employee where eqcol = 1 and emp_salary > 10000 allow filtering;
+
+cqlsh:tp1> select * from Employee where eqcol=1 and emp_salary > 50000 allow filtering;
+
+ emp_id | emp_address | emp_dept  | emp_desg | emp_name | emp_salary | eqcol
+--------+-------------+-----------+----------+----------+------------+-------
+   1001 |        PUNE |     ADMIN |      DIR |      XYZ |     100000 |     1
+   1003 |        PUNE | PRINCIPAL |     PRIN |      DEF |     125000 |     1
+
+
+
+
+cqlsh:tp1> select * from Employee where  emp_salary >= 50000 and emp_salary <= 1
+00000 and eqcol=1 allow filtering;
+
+ emp_id | emp_address | emp_dept | emp_desg | emp_name | emp_salary | eqcol
+--------+-------------+----------+----------+----------+------------+-------
+   1001 |        PUNE |    ADMIN |      DIR |      XYZ |     100000 |     1
+   1002 |        PUNE |    ADMIN |       JD |      PQR |      50000 |     1
+
+8.find all employees of IT dept
+
+select * from Employee where emp_dept = 'IT';
+
+in connective
+
+9.Find information of Employees 1001, 1002, 1003
+
+cqlsh:tp1> select * from Employee where emp_id in (1001, 1002, 1003);
+
+ emp_id | emp_address | emp_dept  | emp_desg | emp_name | emp_salary | eqcol
+--------+-------------+-----------+----------+----------+------------+-------
+   1001 |        PUNE |     ADMIN |      DIR |      XYZ |     100000 |     1
+   1002 |        PUNE |     ADMIN |       JD |      PQR |      50000 |     1
+   1003 |        PUNE | PRINCIPAL |     PRIN |      DEF |     125000 |     1
+
+
+
+10.update salary of all employee of 1001 to 250000
+
+cqlsh:tp1> update Employee1 set emp_salary =  250000 where emp_dept='ADMIN'and e
+mp_id=1001;
+
+11.remove record of employee 1003
+
+cqlsh:tp1> delete from Employee1 where emp_id = 1003;
+cqlsh:tp1> select * from employee1;
+
+ emp_id | emp_dept | emp_address | emp_desg | emp_name | emp_salary
+--------+----------+-------------+----------+----------+------------
+   1001 |    ADMIN |        PUNE |      DIR |      XYZ |     250000
+   1002 |    ADMIN |        PUNE |       JD |      PQR |     200000
+
+
+
+12.
+cqlsh:tp1> select * from Employee where emp_id in(1001, 1002) order by emp_dept
+ desc limit 10;
+
+ emp_id | emp_dept | emp_address | emp_desg | emp_name | emp_salary
+--------+----------+-------------+----------+----------+------------
+   1002 |    ADMIN |        PUNE |       JD |      PQR |     200000
+   1001 |    ADMIN |        PUNE |      DIR |      XYZ |     100000
+
+(2 rows)
+
+
+
+Using a compound primary key
+Use a compound primary key when you want to create columns that you can query to return sorted results.
+Procedure
+To create a table having a compound primary key, use two or more columns as the primary key.
+
+CREATE TABLE emp (
+  empID int,
+  deptID int,
+  first_name varchar,
+  last_name varchar,
+  PRIMARY KEY (empID, deptID));
+
+The compound primary key is made up of the empID and deptID columns in this example. The empID acts as a partition key for distributing data in the table among the various nodes that comprise the cluster. The remaining component of the primary key, the deptID, acts as a clustering mechanism and ensures that the data is stored in ascending order on disk (much like a clustered index in Microsoft SQL Server).

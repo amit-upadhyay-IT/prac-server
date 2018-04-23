@@ -1,0 +1,8 @@
+java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb
+
+http://localhost:8000/shell/
+
+
+reference
+
+http://docs.aws.amazon.com/amazondynamodb/latest/gettingstartedguide/GettingStarted.JsShell.01.html

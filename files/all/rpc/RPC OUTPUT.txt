@@ -1,8 +1,0 @@
-output RPC
-
-
-Server is Ready
-
-Enter a number
-25
-Factorial of 25is 2076180480
